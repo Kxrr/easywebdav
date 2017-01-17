@@ -1,17 +1,12 @@
+import six
 import requests
-import platform
 from numbers import Number
 import xml.etree.cElementTree as xml
 from collections import namedtuple
 
-py_majversion, py_minversion, py_revversion = platform.python_version_tuple()
+from six.moves.urllib_parse import urlparse
+from six.moves.http_client import responses as HTTP_CODES
 
-if py_majversion == '2':
-    from httplib import responses as HTTP_CODES
-    from urlparse import urlparse
-else:
-    from http.client import responses as HTTP_CODES
-    from urllib.parse import urlparse
 
 DOWNLOAD_CHUNK_SIZE_BYTES = 1 * 1024 * 1024
 
@@ -150,7 +145,7 @@ class Client(object):
         self._send('DELETE', path, 204)
 
     def upload(self, local_path_or_fileobj, remote_path):
-        if isinstance(local_path_or_fileobj, basestring):
+        if isinstance(local_path_or_fileobj, six.string_types):
             with open(local_path_or_fileobj, 'rb') as f:
                 self._upload(f, remote_path)
         else:
@@ -161,7 +156,7 @@ class Client(object):
 
     def download(self, remote_path, local_path_or_fileobj):
         response = self._send('GET', remote_path, 200, stream=True)
-        if isinstance(local_path_or_fileobj, basestring):
+        if isinstance(local_path_or_fileobj, six.string_types):
             with open(local_path_or_fileobj, 'wb') as f:
                 self._download(f, response)
         else:
@@ -169,7 +164,7 @@ class Client(object):
 
     def _download(self, fileobj, response):
         for chunk in response.iter_content(DOWNLOAD_CHUNK_SIZE_BYTES):
-            fileobj.write(chunk)
+            fileobj.write(six.u(chunk))
 
     def ls(self, remote_path='.'):
         headers = {'Depth': '1'}

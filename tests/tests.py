@@ -1,11 +1,4 @@
-import platform
-
-python_version, _, __ = platform.python_version_tuple()
-if python_version == '2':
-    from StringIO import StringIO
-else:
-    from io import StringIO
-
+import six
 from . import TestCase
 
 class Tests(TestCase):
@@ -126,9 +119,9 @@ class Tests(TestCase):
         self._assert_local_file(path, self.content)
     def test__download_stream(self):
         self._create_file('file', self.content)
-        sio = StringIO()
+        sio = six.BytesIO()
         self.client.download('file', sio)
-        self.assertEqual(self.content, sio.getvalue())
+        self.assertEqual(six.b(self.content), sio.getvalue())
 
     def test__upload(self):
         path = self._local_file(self.content)
@@ -146,8 +139,8 @@ class Tests(TestCase):
         self.client.upload(path, '/two/file')
         self._assert_file('two/file', self.content)
     def test__upload_stream(self):
-        sio = StringIO()
-        sio.write(self.content)
+        sio = six.BytesIO()
+        sio.write(six.b(self.content))
         sio.seek(0)
         self.client.upload(sio, 'file')
         self._assert_file('file', self.content)

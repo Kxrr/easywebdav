@@ -1,5 +1,5 @@
 import os
-import unittest
+import unittest2
 import atexit
 import subprocess
 import inspect
@@ -14,7 +14,7 @@ import easywebdav
 SERVER_USERNAME = 'testuser'
 SERVER_PASSWORD = SERVER_USERNAME
 SERVER_PORT = 28080
-SERVER_URL = 'http://localhost:{}'.format(SERVER_PORT)
+SERVER_URL = 'http://localhost:{0}'.format(SERVER_PORT)
 
 _initialized = False
 _init_failed = False
@@ -24,7 +24,7 @@ _client = None
 def init():
     global _initialized, _init_failed, _server_process, _server_path, _client
     if _init_failed:
-        raise unittest.SkipTest('Test session initialization failed')
+        raise unittest2.SkipTest('Test session initialization failed')
     try:
         if _initialized:
             return
@@ -51,6 +51,7 @@ def init():
                 stdin=subprocess.PIPE,
                 )
         _server_process = subprocess.Popen(**process_props)
+        output('Start WebDAV with {0}...'.format(process_props))
         atexit.register(terminate_server)
 
         # Ensure server is running
@@ -96,7 +97,7 @@ def output(msg, *args, **kwargs):
         msg = msg.format(args, kwargs)
     print(msg)
 
-class TestCase(unittest.TestCase):
+class TestCase(unittest2.TestCase):
     def setUp(self):
         init()
         self.client = ClientProxy(self, _client)
@@ -174,6 +175,6 @@ class MethodProxy(object):
         result = self.__method__(*args, **kwargs)
         cwd_after = self.__client__.cwd
         self.__test__.assertEqual(cwd_before, cwd_after,
-            'CWD has changed during method "{}":\n  Before: {}\n  After:  {}'
+            'CWD has changed during method "{0}":\n  Before: {1}\n  After:  {2}'
             .format(self.__method__.__name__, cwd_before, cwd_after))
         return result

@@ -24,6 +24,7 @@ properties = dict(
     data_files = [],
     install_requires=[
         "requests",
+        "six",
         ],
     entry_points=dict(
         console_scripts=[],
@@ -36,6 +37,7 @@ if "EASYWEBDAV_DEV" in os.environ:
         "nose",
         "yanc",
         "PyWebDAV",
+        "unittest2",
         ))
 
 setup(**properties)
