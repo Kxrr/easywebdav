@@ -164,7 +164,7 @@ class Client(object):
 
     def _download(self, fileobj, response):
         for chunk in response.iter_content(DOWNLOAD_CHUNK_SIZE_BYTES):
-            fileobj.write(six.u(chunk))
+            fileobj.write(chunk)
 
     def ls(self, remote_path='.'):
         headers = {'Depth': '1'}
